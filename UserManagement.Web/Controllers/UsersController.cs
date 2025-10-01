@@ -4,7 +4,7 @@ using UserManagement.Web.Models.Users;
 
 namespace UserManagement.WebMS.Controllers;
 
-[Route("users")]
+[Route("users/{action=List}")]
 public class UsersController : Controller
 {
     private readonly IUserService _userService;
@@ -13,13 +13,45 @@ public class UsersController : Controller
     [HttpGet]
     public ViewResult List()
     {
-        var items = _userService.GetAll().Select(p => new UserListItemViewModel
+        var allUsers = _userService.GetAll();
+
+        var model = GetModelForListView(allUsers);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public ViewResult ListActive()
+    {
+        var activeUsers = _userService.FilterByActive(true);
+
+        var model = GetModelForListView(activeUsers);
+
+        return View("List", model);
+    }
+
+    [HttpGet]
+    public ViewResult ListNonActive()
+    {
+        var nonActiveUsers = _userService.FilterByActive(false);
+
+        var model = GetModelForListView(nonActiveUsers);
+
+        return View("List", model);
+    }
+
+    /// <summary>
+    /// Gets the model for the List view using the supplied collection of User objects.
+    /// </summary>
+    private UserListViewModel GetModelForListView(IEnumerable<Models.User> users)
+    {
+        var items = users.Select(user => new UserListItemViewModel
         {
-            Id = p.Id,
-            Forename = p.Forename,
-            Surname = p.Surname,
-            Email = p.Email,
-            IsActive = p.IsActive
+            Id = user.Id,
+            Forename = user.Forename,
+            Surname = user.Surname,
+            Email = user.Email,
+            IsActive = user.IsActive
         });
 
         var model = new UserListViewModel
@@ -27,6 +59,6 @@ public class UsersController : Controller
             Items = items.ToList()
         };
 
-        return View(model);
+        return model;
     }
 }

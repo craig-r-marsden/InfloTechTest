@@ -1,3 +1,4 @@
+using System.Linq;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
@@ -8,11 +9,11 @@ namespace UserManagement.Data.Tests;
 public class UserControllerTests
 {
     [Fact]
-    public void List_WhenServiceReturnsUsers_ModelMustContainUsers()
+    public void List_WhenServiceReturnsAllUsers_ModelMustContainAllUsers()
     {
         // Arrange: Initializes objects and sets the value of the data that is passed to the method under test.
         var controller = CreateController();
-        var users = SetupUsers();
+        var allUsers = SetupUsers();
 
         // Act: Invokes the method under test with the arranged parameters.
         var result = controller.List();
@@ -20,29 +21,85 @@ public class UserControllerTests
         // Assert: Verifies that the action of the method under test behaves as expected.
         result.Model
             .Should().BeOfType<UserListViewModel>()
-            .Which.Items.Should().BeEquivalentTo(users);
+            .Which.Items.Should().BeEquivalentTo(allUsers)
+            .And.HaveCount(11);
     }
 
-    private User[] SetupUsers(string forename = "Johnny", string surname = "User", string email = "juser@example.com", bool isActive = true)
+    [Fact]
+    public void ListActive_WhenServiceReturnsActiveUsers_ModelMustContainActiveUsers()
     {
-        var users = new[]
+        // Arrange: Initializes objects and sets the value of the data that is passed to the method under test.
+        var controller = CreateController();
+        var allUsers = SetupUsers();
+
+        var activeUsers = allUsers
+                            .Where(user => user.IsActive)
+                            .ToArray();
+
+        _userService
+            .Setup(s => s.FilterByActive(true))
+            .Returns(activeUsers);
+
+        // Act: Invokes the method under test with the arranged parameters.
+        var result = controller.ListActive();
+
+        // Assert: Verifies that the action of the method under test behaves as expected.
+        result.Model
+            .Should().BeOfType<UserListViewModel>()
+            .Which.Items.Should().BeEquivalentTo(activeUsers)
+            .And.HaveCount(7);
+    }
+
+    [Fact]
+    public void ListNonActive_WhenServiceReturnsNonActiveUsers_ModelMustContainNonActiveUsers()
+    {
+        // Arrange: Initializes objects and sets the value of the data that is passed to the method under test.
+        var controller = CreateController();
+        var allUsers = SetupUsers();
+
+        var nonActiveUsers = allUsers
+                                .Where(user => !user.IsActive)
+                                .ToArray();
+
+        _userService
+            .Setup(s => s.FilterByActive(false))
+            .Returns(nonActiveUsers);
+
+        // Act: Invokes the method under test with the arranged parameters.
+        var result = controller.ListNonActive();
+
+        // Assert: Verifies that the action of the method under test behaves as expected.
+        result.Model
+            .Should().BeOfType<UserListViewModel>()
+            .Which.Items.Should().BeEquivalentTo(nonActiveUsers)
+            .And.HaveCount(4);
+    }
+
+    private User[] SetupUsers()
+    {
+        var allUsers = new[]
         {
-            new User
-            {
-                Forename = forename,
-                Surname = surname,
-                Email = email,
-                IsActive = isActive
-            }
+            new User { Id = 1, Forename = "Peter", Surname = "Loew", Email = "ploew@example.com", IsActive = true },
+            new User { Id = 2, Forename = "Benjamin Franklin", Surname = "Gates", Email = "bfgates@example.com", IsActive = true },
+            new User { Id = 3, Forename = "Castor", Surname = "Troy", Email = "ctroy@example.com", IsActive = false },
+            new User { Id = 4, Forename = "Memphis", Surname = "Raines", Email = "mraines@example.com", IsActive = true },
+            new User { Id = 5, Forename = "Stanley", Surname = "Goodspeed", Email = "sgodspeed@example.com", IsActive = true },
+            new User { Id = 6, Forename = "H.I.", Surname = "McDunnough", Email = "himcdunnough@example.com", IsActive = true },
+            new User { Id = 7, Forename = "Cameron", Surname = "Poe", Email = "cpoe@example.com", IsActive = false },
+            new User { Id = 8, Forename = "Edward", Surname = "Malus", Email = "emalus@example.com", IsActive = false },
+            new User { Id = 9, Forename = "Damon", Surname = "Macready", Email = "dmacready@example.com", IsActive = false },
+            new User { Id = 10, Forename = "Johnny", Surname = "Blaze", Email = "jblaze@example.com", IsActive = true },
+            new User { Id = 11, Forename = "Robin", Surname = "Feld", Email = "rfeld@example.com", IsActive = true },
         };
 
         _userService
             .Setup(s => s.GetAll())
-            .Returns(users);
+            .Returns(allUsers);
 
-        return users;
+        return allUsers;
     }
 
     private readonly Mock<IUserService> _userService = new();
+
     private UsersController CreateController() => new(_userService.Object);
 }
