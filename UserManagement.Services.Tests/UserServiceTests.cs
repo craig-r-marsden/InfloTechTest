@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Implementations;
@@ -20,7 +21,12 @@ public class UserServiceTests
         result.Should().BeSameAs(users);
     }
 
-    private IQueryable<User> SetupUsers(string forename = "Johnny", string surname = "User", string email = "juser@example.com", bool isActive = true)
+    private IQueryable<User> SetupUsers(
+        string forename = "Johnny",
+        string surname = "User",
+        string email = "juser@example.com",
+        bool isActive = true,
+        string dateOfBirth = "1984-05-23")
     {
         var users = new[]
         {
@@ -29,7 +35,8 @@ public class UserServiceTests
                 Forename = forename,
                 Surname = surname,
                 Email = email,
-                IsActive = isActive
+                IsActive = isActive,
+                DateOfBirth = DateOnly.Parse(dateOfBirth)
             }
         }.AsQueryable();
 

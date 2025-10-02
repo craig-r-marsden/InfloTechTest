@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using FluentAssertions;
 using UserManagement.Models;
@@ -16,7 +17,8 @@ public class DataContextTests
         {
             Forename = "Brand New",
             Surname = "User",
-            Email = "brandnewuser@example.com"
+            Email = "brandnewuser@example.com",
+            DateOfBirth = new DateOnly(1985, 6, 12)
         };
         context.Create(entity);
 

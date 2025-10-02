@@ -51,7 +51,8 @@ public class UsersController : Controller
             Forename = user.Forename,
             Surname = user.Surname,
             Email = user.Email,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            DateOfBirth = user.DateOfBirth
         });
 
         var model = new UserListViewModel
