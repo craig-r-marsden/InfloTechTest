@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace UserManagement.Data;
 
@@ -11,6 +10,13 @@ public interface IDataContext
     /// <typeparam name="TEntity"></typeparam>
     /// <returns></returns>
     IQueryable<TEntity> GetAll<TEntity>() where TEntity : class;
+
+    /// <summary>
+    /// Get the entity matching the supplied ID
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
+    TEntity? GetEntityByID<TEntity>(long id) where TEntity : class;
 
     /// <summary>
     /// Create a new item

@@ -1,0 +1,10 @@
+﻿@model UserManagement.Web.Models.Users.UserFormViewModel
+
+<h2>Create User</h2>
+
+<form asp-controller="Users" asp-action="Create" method="post">
+    <partial name="FormFields" model="Model" />
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="List" class="btn btn-secondary ms-2">Cancel</a>
+</form>

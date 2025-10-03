@@ -2,12 +2,7 @@
 
 namespace UserManagement.Web.Models.Users;
 
-public class UserListViewModel
-{
-    public List<UserListItemViewModel> Items { get; set; } = new();
-}
-
-public class UserListItemViewModel
+public class UserDetailsViewModel
 {
     public long Id { get; set; }
     public string? Forename { get; set; }

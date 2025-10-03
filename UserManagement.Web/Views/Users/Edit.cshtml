@@ -1,0 +1,10 @@
+﻿@model UserManagement.Web.Models.Users.UserFormViewModel
+
+<h2>Edit User</h2>
+
+<form asp-controller="Users" asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <partial name="FormFields" model="Model" />
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="List" class="btn btn-secondary ms-2">Cancel</a>
+</form>

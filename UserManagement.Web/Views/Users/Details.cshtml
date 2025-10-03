@@ -1,0 +1,16 @@
+﻿@model UserManagement.Web.Models.Users.UserDetailsViewModel
+
+<h2>User Details</h2>
+
+<div class="card p-3 shadow-sm">
+    <partial name="DetailsFields" model="Model" />
+
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-action="List" class="btn btn-secondary ms-2">Back to List</a>
+    </div>
+</div>
+
+
+
+
