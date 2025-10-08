@@ -1,0 +1,76 @@
+﻿@model UserManagement.Web.Models.Users.UserLogItemViewModel
+@using System.Text.Json
+@using UserManagement.Services.Domain.Implementations
+
+@{
+    ViewBag.Title = "User Log Details";
+
+    var changes = ViewBag.ParsedChanges as Dictionary<string, FieldChange>;
+
+    string FormatValue(object? value)
+    {
+        if (value is JsonElement element)
+        {
+            // Try parsing as DateTime if the JSON value is a string
+            if (element.ValueKind == JsonValueKind.String && element.TryGetDateTime(out var dt))
+            {
+                return dt.ToLocalTime().ToString("d");
+            }
+
+            // Otherwise just return the raw string representation
+            return element.ToString();
+        }
+
+        return value?.ToString() ?? "";
+    }
+}
+
+<h2>User Log Details</h2>
+
+<div class="card p-4 shadow-sm">
+    <dl class="row">
+        <dt class="col-sm-3">User</dt>
+        <dd class="col-sm-9">@Model.User</dd>
+
+        <dt class="col-sm-3">Action</dt>
+        <dd class="col-sm-9">@Model.Action</dd>
+
+        <dt class="col-sm-3">Timestamp</dt>
+        <dd class="col-sm-9">@Model.Timestamp.ToLocalTime()</dd>
+    </dl>
+
+    <hr />
+
+    <h4>Change Details</h4>
+
+    @if (changes != null && changes.Any())
+    {
+        <table class="table table-bordered table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Old Value</th>
+                    <th>New Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var change in changes)
+                {
+                    <tr>
+                        <td>@change.Key</td>
+                        <td class="text-danger">@FormatValue(change.Value.OldValue)</td>
+                        <td class="text-success">@FormatValue(change.Value.NewValue)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        }
+    else
+    {
+        <p class="text-muted">No detailed changes available.</p>
+    }
+</div>
+
+<div class="mt-3">
+    <a asp-action="Logs" class="btn btn-primary">Back to Logs</a>
+</div>

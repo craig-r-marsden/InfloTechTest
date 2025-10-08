@@ -12,8 +12,11 @@ public interface IUserService
     /// <returns></returns>
     IEnumerable<User> FilterByActive(bool isActive);
     IEnumerable<User> GetAll();
+    IEnumerable<UserAuditLog> GetAllLogs();
     void CreateUser(User user);
     void UpdateUser(User user);
     void DeleteUser(User user);
     User? GetUserByID(long id);
+    UserAuditLog? GetUserLogByID(long id);
+    List<UserAuditLog> GetUserLogsByUserID(long id);    
 }
