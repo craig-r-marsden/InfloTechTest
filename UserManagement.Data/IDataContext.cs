@@ -1,9 +1,14 @@
 ﻿using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using UserManagement.Models;
 
 namespace UserManagement.Data;
 
 public interface IDataContext
 {
+    public DbSet<User>? Users { get; set; }
+    public DbSet<UserAuditLog> UserAuditLogs { get; set; }
+    
     /// <summary>
     /// Get a list of items
     /// </summary>

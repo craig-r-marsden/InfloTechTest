@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text.Json;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
@@ -88,6 +89,9 @@ public class UsersController : Controller
 
             _userService.CreateUser(user);
 
+            // Use this to display confirmation on List screen after redirect.
+            TempData["SuccessMessage"] = $"User '{user.Forename} {user.Surname} ({user.Email})' was successfully created.";
+
             return RedirectToAction(nameof(List));
         }
 
@@ -111,7 +115,8 @@ public class UsersController : Controller
             Surname = user.Surname,
             Email = user.Email,
             DateOfBirth = user.DateOfBirth,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            Logs = _userService.GetUserLogsByUserID(id),
         };
 
         return View(model);
@@ -163,6 +168,9 @@ public class UsersController : Controller
 
             _userService.UpdateUser(user);
 
+            // Use this to display confirmation on List screen after redirect.
+            TempData["SuccessMessage"] = $"User '{user.Forename} {user.Surname} ({user.Email})' was successfully updated.";
+
             return RedirectToAction(nameof(List));
         }
 
@@ -191,7 +199,7 @@ public class UsersController : Controller
 
         return View(model);
     }
-    
+
     [HttpPost("{id:long}"), ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(long id)
@@ -206,8 +214,73 @@ public class UsersController : Controller
         _userService.DeleteUser(user);
 
         // Use this to display confirmation on List screen after redirect.
-        TempData["DeleteSuccessMessage"] = $"User '{user.Forename} {user.Surname} ({user.Email})' was successfully deleted.";
+        TempData["SuccessMessage"] = $"User '{user.Forename} {user.Surname} ({user.Email})' was successfully deleted.";
 
         return RedirectToAction(nameof(List));
+    }
+
+    [HttpGet]
+    public ViewResult Logs()
+    {
+        var model = GetUserLogsViewModel();
+
+        return View(model);
+    }
+
+    public UserLogsViewModel GetUserLogsViewModel()
+    {
+        var logs = _userService.GetAllLogs();
+
+        var items = logs.Select(log => new UserLogItemViewModel
+        {
+            Id = log.Id,
+            Action = log.Action,
+            UserId = log.UserId,
+            Timestamp = log.Timestamp,
+            Details = log.Details,
+            User = log.User
+        });
+
+        var model = new UserLogsViewModel
+        {
+            Items = items.ToList()
+        };
+
+        return model;
+    }
+
+    [HttpGet("{id:long}")]
+    public IActionResult LogDetails(long id)
+    {
+        var userLog = _userService.GetUserLogByID(id);
+
+        if (userLog == null)
+        {
+            return NotFound();
+        }
+        
+        var model = new UserLogItemViewModel
+        {
+            Id = userLog.Id,
+            User = userLog.User,
+            Action = userLog.Action,
+            Timestamp = userLog.Timestamp,
+            Details = userLog.Details,
+        };
+
+        // Try to parse Details JSON into dictionary for the view.
+        Dictionary<string, FieldChange>? parsedChanges = null;
+        try
+        {
+            parsedChanges = JsonSerializer.Deserialize<Dictionary<string, FieldChange>>(userLog.Details ?? "{}");
+        }
+        catch
+        {
+            parsedChanges = null; // fallback if not valid JSON
+        }
+
+        ViewBag.ParsedChanges = parsedChanges;
+
+        return View("LogDetails", model);
     }
 }

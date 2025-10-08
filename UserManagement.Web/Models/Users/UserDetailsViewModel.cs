@@ -1,4 +1,5 @@
 ﻿using System;
+using UserManagement.Models;
 
 namespace UserManagement.Web.Models.Users;
 
@@ -10,4 +11,5 @@ public class UserDetailsViewModel
     public string? Email { get; set; }
     public DateOnly DateOfBirth { get; set; }
     public bool IsActive { get; set; }
+    public List<UserAuditLog> Logs { get; set; } = new();
 }

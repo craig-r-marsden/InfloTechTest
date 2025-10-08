@@ -1,11 +1,15 @@
 ﻿@model UserManagement.Web.Models.Users.UserListViewModel
 
+@{
+    ViewBag.Title = "User List";
+}
+
 <h2>User List</h2>
 
-@if (TempData["DeleteSuccessMessage"] != null)
+@if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["DeleteSuccessMessage"]
+        @TempData["SuccessMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }

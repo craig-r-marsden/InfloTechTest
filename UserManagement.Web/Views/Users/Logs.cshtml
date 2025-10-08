@@ -1,0 +1,62 @@
+﻿@using System.Text.Json
+@model UserManagement.Web.Models.Users.UserLogsViewModel
+
+@{
+    ViewBag.Title = "User Logs";
+}
+
+<h2>User Logs</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Action</th>
+                <th>Timestamp</th>
+                <th>Details</th>
+                <th style="width: 1px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @item.User
+                    </td>
+                    <td>
+                        @item.Action
+                    </td>
+                    <td>
+                        @item.Timestamp
+                    </td>
+                    @* <td>
+                        @item.Details
+                    </td> *@
+                    @* <td>
+                        @if (item.Action == "Edit")
+                        {
+                            var details = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(item.Details);
+                            <ul>
+                            @foreach (var change in details)
+                            {
+                                <li><b>@change.Key:</b> @change.Value["OldValue"] → @change.Value["NewValue"]</li>
+                            }
+                            </ul>
+                        }
+                        else
+                        {
+                            @item.Details
+                        }
+                    </td> *@
+                    <td>
+                        <a asp-controller="Users" asp-action="LogDetails" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
